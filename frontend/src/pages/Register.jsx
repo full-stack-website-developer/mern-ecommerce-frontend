@@ -1,3 +1,4 @@
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import Button from '../components/common/Button';
@@ -5,31 +6,21 @@ import Input from '../components/common/Input';
 import Card from '../components/common/Card';
 import Divider from '../components/common/Divider';
 import Checkbox from '../components/common/Checkbox';
-import Select from '../components/common/Select';
-import { useState } from 'react';
-import { registerUser } from '../services/authService';
+import authService from '../services/auth.service';
 import useUserContext from '../hooks/useUserContext';
 
 const Register = () => {
-  const [fName, setFname] = useState('');
-  const [lName, setLname] = useState('');
-  // const [userType, setUserType] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [terms, setTerms] = useState(false);
-
+  const { register, handleSubmit, formState, setError } = useForm();
+  const { errors, isSubmitting } = formState;
   const { setUser } = useUserContext();
-
   const navigate = useNavigate();
 
-  async function handleRegister(e) {
-    e.preventDefault();
+  async function handleRegister(values) {
+    const { firstName, lastName, email, phone, password, confirmPassword, terms } = values;
   
     const newUser = {
-      fName,
-      lName,
+      fName: firstName,
+      lName: lastName,
       email,
       phone,
       password,
@@ -37,21 +28,34 @@ const Register = () => {
       terms,
     };
 
-    const res = await registerUser(newUser);
-    if (res.data.success) {
+    try {
+      const res = await authService.register(newUser);
       setUser(res.data.user)
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
       navigate('/dashboard');
+    } catch(err) {
+        if (err.status === 409) {
+          setError('email', {
+            type: 'server',
+            message: err.message, 
+          });
+          return;
+        }
+
+      if (err.status === 400 && err.data?.errors) {
+        Object.entries(err.data.errors).forEach(([field, message]) => {
+          setError(field, { type: 'server', message });
+        });
+        return;
+      }
     }
   }
 
-  const useTypesOptions = [
-    { label: 'Select an Option', value: 'null'},
-    { label: 'User', value: 'user'},
-    { label: 'Seller', value: 'seller'},
-    { label: 'Admin', value: 'admin'},
-  ];
+  // const useTypesOptions = [
+  //   { label: 'Select an Option', value: 'null'},
+  //   { label: 'User', value: 'user'},
+  //   { label: 'Seller', value: 'seller'},
+  //   { label: 'Admin', value: 'admin'},
+  // ];
 
   return (
     <MainLayout>
@@ -60,19 +64,21 @@ const Register = () => {
           <Card>
             <h1 className="text-3xl font-bold text-center mb-8">Create Account</h1>
             
-            <form className="space-y-6" onSubmit={handleRegister}>
+            <form className="space-y-6" onSubmit={handleSubmit(handleRegister)}>
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   label="First Name"
                   placeholder="John"
-                  value={fName}
-                  onChange = {(e) => setFname(e.target.value)}
+                  { ...register('firstName', {
+                    required: "First Name is Required!",
+                  }) }
+                  error = {errors.firstName ? errors.firstName.message : false} 
+                  required
                 />
                 <Input
                   label="Last Name"
                   placeholder="Doe"
-                  value={lName}
-                  onChange = {(e) => setLname(e.target.value)}            
+                  { ...register('lastName') }
                 />
               </div>
 
@@ -87,32 +93,71 @@ const Register = () => {
                 label="Email"
                 type="email"
                 placeholder="Enter your email"
-                value={email}
-                onChange = {(e) => setEmail(e.target.value)}
+                { 
+                  ...register('email', {
+                    required: "Email is Required!",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i,
+                      message: 'Please enter a valid email address'
+                    },
+                  })
+                }
+                error = {errors.email ? errors.email.message : false} 
+                required
               />
               
               <Input
                 label="Phone"
                 type="tel"
-                placeholder="+1 234 567 8900"
-                value={phone}
-                onChange = {(e) => setPhone(e.target.value)}
+                placeholder="+12345678900"
+                { 
+                  ...register('phone', {
+                    required: "Phone number is Required!",
+                    pattern: {
+                      value: /^(?:\+|00)?\d{10,15}$/,
+                      message: 'Please enter a valid phone number'
+                    },
+                  })
+                }
+                error = {errors.phone ? errors.phone.message : false} 
+                required
               />
               
               <Input
                 label="Password"
                 type="password"
                 placeholder="Create a password"
-                value={password}
-                onChange = {(e) => setPassword(e.target.value)}
+                {
+                  ...register('password', {
+                    required: 'Password is required!',
+                    minLength: {
+                      value: 8,
+                      message: 'Password must be at least 8 characters'
+                    },
+                    pattern: {
+                      value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                      message:
+                        'Password must include uppercase, lowercase, number and special character'
+                    }
+                  })
+                }
+                error={errors.password ? errors.password.message : false}
+                required
               />
               
               <Input
                 label="Confirm Password"
                 type="password"
                 placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange = {(e) => setConfirmPassword(e.target.value)}
+                {
+                  ...register('confirmPassword', {
+                    required: 'Confirm password is required!',
+                    validate: (value, formValues) =>
+                      value === formValues.password || 'Passwords do not match'
+                  })
+                }
+                error={errors.confirmPassword ? errors.confirmPassword.message : false}
+                required
               />
 
               <Checkbox
@@ -129,12 +174,17 @@ const Register = () => {
                   </span>
                 }
 
-                checked={terms}
-                onChange={(e) => setTerms(e.target.checked)}
+                {  
+                  ...register('terms', {
+                    required: "Please accept our Terms and Policies"
+                  })
+                }
+                error = {errors.terms ? errors.terms.message : false}
+                required
               />
 
-              <Button variant="primary" className="w-full">
-                Create Account
+              <Button variant="primary" className="w-full" disabled={isSubmitting}>
+                { isSubmitting ? 'Redirecting to Dashboard...' : 'Create Account' }
               </Button>
             </form>
 

@@ -2,14 +2,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import SearchBar from '../common/SearchBar';
 import Button from '../common/Button';
 import useUserContext from '../../hooks/useUserContext';
+import authService from '../../services/auth.service';
 
 const Header = () => {
-  const token = localStorage.getItem('token');
+  const token = authService.getToken();
   const navigate = useNavigate();
   const { user } = useUserContext();
   
   function handleLogOut() {
-    localStorage.removeItem('token');
+    authService.clearAuthData();
     navigate('/login');
   }
 
@@ -37,7 +38,7 @@ const Header = () => {
               </select>
               {
                 user && 
-                <p>Welcome {user.firsNname}</p>
+                <p>Welcome {user.firstName}</p>
               }
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { verifyToken } from "../services/authService";
+import authService from "../services/auth.service";
 
 export const UserContext = createContext({});
 
@@ -9,8 +9,8 @@ const UserProvider = ({ children }) => {
 
     useEffect(() => {
         const verifyAndLoadUser = async () => {
-            const savedUser = localStorage.getItem('user');
-            const savedToken = localStorage.getItem('token');
+            const savedUser = authService.getCurrUser();
+            const savedToken = authService.getToken();
 
             if (!savedUser || !savedToken) {
                 setLoading(false);
@@ -18,19 +18,16 @@ const UserProvider = ({ children }) => {
             }
 
             try {
-                const res = await verifyToken(savedToken)
-                console.log(user)
-                if (res.ok) {
-                    setUser(JSON.parse(savedUser));
+                const res = await authService.verifyToken()
+                if (res.success) {
+                    setUser(savedUser);
                 } else {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
+                    authService.clearAuthData();
                     setUser(null);
                 }
             } catch(err) {
                 console.error('Error verifying token:', err);
-                localStorage.removeItem('user');
-                localStorage.removeItem('token');
+                authService.clearAuthData();
                 setUser(null);
             } finally {
                 setLoading(false);

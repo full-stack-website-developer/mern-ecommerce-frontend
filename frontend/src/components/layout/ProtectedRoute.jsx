@@ -4,7 +4,6 @@ import useUserContext from "../../hooks/useUserContext";
 
 const ProtectedRoute = () => {
     const { user, loading } = useUserContext();
-   
     if (loading) {
         return <FullPageLoader />
     }

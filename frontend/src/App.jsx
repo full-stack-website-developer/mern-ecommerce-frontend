@@ -14,6 +14,8 @@ import Payment from './pages/Payment';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
+import VerifyOtp from './pages/VerifyOtp';
+import ResetPassword from './pages/ResetPassword';
 
 // User Dashboard Pages
 import Dashboard from './pages/dashboard/Dashboard';
@@ -41,6 +43,7 @@ import FAQ from './pages/FAQ';
 import UserProvider from './store/userContext';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import AdminProtectedRoutes from './components/layout/AdminProtectedRoutes';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
   return (
@@ -59,9 +62,18 @@ function App() {
           <Route path="/payment" element={<Payment />} />
 
           {/* Auth Routes */}
-          <Route path="/login" element={<Login />} />
+          <Route 
+            path="/login" 
+            element={
+              <GoogleOAuthProvider clientId="856083765329-jt8t4fmri8ohos2j3tsltl9ld22clohj.apps.googleusercontent.com">
+                <Login />
+              </GoogleOAuthProvider>
+            } 
+          />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp/:email" element={<VerifyOtp />} />
+          <Route path="/reset-password/:email" element={<ResetPassword />} />
 
           {/* User Dashboard Routes */}
           <Route element={<ProtectedRoute />}>

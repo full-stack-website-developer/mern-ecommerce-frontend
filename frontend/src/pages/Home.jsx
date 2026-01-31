@@ -3,8 +3,11 @@ import MainLayout from '../components/layout/MainLayout';
 import ProductList from '../components/product/ProductList';
 import Button from '../components/common/Button';
 import Badge from '../components/common/Badge';
+import useUserContext from '../hooks/useUserContext';
 
 const Home = () => {
+  const { user } = useUserContext();
+  console.log(user);
   return (
     <MainLayout>
       {/* Hero Section */}
