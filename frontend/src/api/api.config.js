@@ -8,13 +8,13 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const API_ENDPOINTS = {
     AUTH: {
-        REGISTER: '/api/auth/register',
-        LOGIN: '/api/auth/login',
-        VERIFY_TOKEN: '/api/auth/verify-token',
-        FORGOT_PASSWORD: '/api/auth/forgot-password',
-        VERIFY_OTP: '/api/auth/verify-otp',
-        CHANGE_PASSWORD: '/api/auth/change-password',
-        GOOGLE_LOGIN: '/api/auth/google',
+        REGISTER: '/auth/register',
+        LOGIN: '/auth/login',
+        VERIFY_TOKEN: '/auth/verify-token',
+        FORGOT_PASSWORD: '/auth/forgot-password',
+        VERIFY_OTP: '/auth/verify-otp',
+        CHANGE_PASSWORD: '/auth/change-password',
+        GOOGLE_LOGIN: '/auth/google',
     },
 };
 
