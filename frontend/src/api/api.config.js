@@ -1,10 +1,10 @@
 // const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://13.61.21.193:3002';
 
 // For Production this must be enable 
-// const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // For Local this must be enable ->
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
+// const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
 
 const API_ENDPOINTS = {
     AUTH: {
