@@ -17,12 +17,11 @@ const Login = () => {
   const { setUser } = useUserContext();
   const { register, handleSubmit, formState, setError } = useForm({
     defaultValues: {
-      'rememberMe': Boolean(authService.getRemember()),
+      'rememberMe': authService.getRemember() === 'true',
     }
   });
+  
   const { errors, isSubmitting } = formState;
-
-  console.log(Boolean(authService.getRemember()))
 
   const responseGoogle = async (authResult) => {
   try {
@@ -47,7 +46,7 @@ const Login = () => {
 
   async function onSubmit(values) {
     const {email, password, rememberMe} = values;
-
+   
     try {
       const res = await authService.login({ email, password, rememberMe });
       setUser(res.data.user)
@@ -76,11 +75,15 @@ const Login = () => {
           <Card>
             <h1 className="text-3xl font-bold text-center mb-8">Login</h1>
             
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" autoComplete='on'>
               <Input
                 label="Email"
                 type="email"
+                name="email"
                 placeholder="Enter your email"
+                error = {errors.email ? errors.email.message : false} 
+                required
+                autoComplete="email"
                 { 
                   ...register('email', {
                     required: "Email is Required!",
@@ -90,20 +93,20 @@ const Login = () => {
                     },
                   })
                 }
-                error = {errors.email ? errors.email.message : false} 
-                required
               />
               <Input
                 label="Password"
                 type="password"
+                error={errors.password ? errors.password.message : false}
+                name="password"
+                required
+                autoComplete="current-password"
                 placeholder="Enter your password"
                 {
-                    ...register('password', {
-                      required: 'Password is required!',
-                    })
-                  }
-                  error={errors.password ? errors.password.message : false}
-                  required
+                  ...register('password', {
+                    required: 'Password is required!',
+                  })
+                }
               />
               
               <div className="flex items-center justify-between">

@@ -1,32 +1,37 @@
 import { createContext, useEffect, useState } from "react";
 import authService from "../services/auth.service";
+import userService from "../services/user.service";
 
-export const UserContext = createContext({});
+export const UserContext = createContext({
+    user: () => {},
+    setUser: () => {},
+    loading: Boolean,
+});
 
 const UserProvider = ({ children }) => {
-    const [user, setUser] = useState();
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const verifyAndLoadUser = async () => {
-            const savedUser = authService.getCurrUser();
             const savedToken = authService.getToken();
 
-            if (!savedUser || !savedToken) {
+            if (!savedToken) {
                 setLoading(false);
                 return;
             }
 
             try {
-                const res = await authService.verifyToken()
+                const res = await userService.getUser()
+
                 if (res.success) {
-                    setUser(savedUser);
+                    setUser(res.data.user);
                 } else {
                     authService.clearAuthData();
                     setUser(null);
                 }
             } catch(err) {
-                console.error('Error verifying token:', err);
+                console.error('Error verifying token or Fetching User data:', err);
                 authService.clearAuthData();
                 setUser(null);
             } finally {

@@ -38,7 +38,7 @@ const Header = () => {
               </select>
               {
                 user && 
-                <p>Welcome {user.firstName}</p>
+                <p>Welcome {user.fullName}</p>
               }
             </div>
           </div>

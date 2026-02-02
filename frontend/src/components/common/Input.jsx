@@ -1,4 +1,4 @@
-const Input = ({ label, type = 'text', placeholder, className = '', error = '',  ...props }) => {
+const Input = ({ label, type = 'text', placeholder, className = '', error = false,  ...props }) => {
   return (
     <div className="w-full">
       {label && (

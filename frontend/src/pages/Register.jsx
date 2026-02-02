@@ -69,16 +69,39 @@ const Register = () => {
                 <Input
                   label="First Name"
                   placeholder="John"
-                  { ...register('firstName', {
-                    required: "First Name is Required!",
-                  }) }
+                  {
+                    ...register('firstName', {
+                      required: "First Name is Required",
+                      minLength: {
+                        value: 3,
+                        message: "First Name must be at least 3 letters",
+                      },
+                      maxLength: {
+                        value: 20,
+                        message: "First Name must be at most 20 letters",
+                      },
+                    })
+                  }
                   error = {errors.firstName ? errors.firstName.message : false} 
                   required
                 />
                 <Input
                   label="Last Name"
                   placeholder="Doe"
-                  { ...register('lastName') }
+                  {
+                    ...register('lastName', {
+                      required: "Last Name is Required",
+                      minLength: {
+                        value: 3,
+                        message: "Last Name must be atleast 3 letters",
+                      },
+                      maxLength: {
+                        value: 20,
+                        message: "Last Name must be atmost 20 letters",
+                      },
+                    })
+                  }
+                  error = {errors.lastName ? errors.lastName.message : false} 
                 />
               </div>
 

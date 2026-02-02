@@ -3,9 +3,6 @@ import { API_BASE_URL } from './api.config';
 class ApiClient {
     constructor(baseURL = API_BASE_URL) {
         this.baseURL = baseURL;
-        this.defaultHeaders = {
-            'Content-Type': 'application/json'
-        };
     }
 
     getAuthToken() {
@@ -17,15 +14,20 @@ class ApiClient {
         const url = `${this.baseURL}${endpoint}`;
         
         const headers = {
-            ...this.defaultHeaders,
             ...options.headers
         };
 
         // Add auth token if available
         const token = this.getAuthToken();
-
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const isFormData = options.body instanceof FormData;
+
+        // ✅ only set JSON header when NOT FormData
+        if (!isFormData && options.body && !headers['Content-Type']) {
+            headers['Content-Type'] = 'application/json';
         }
 
         const config = {
@@ -79,20 +81,21 @@ class ApiClient {
     }
 
     patch(endpoint, body, options = {}) {
-        return this.request(endpoint, {
-            ...options,
-            method: 'PATCH',
-            body: JSON.stringify(body)
-        });
+       return this.request(endpoint, {
+        ...options,
+        method: 'PATCH',
+        body: body instanceof FormData ? body : JSON.stringify(body),
+    });
     }
 }
 
 class ApiError extends Error {
-    constructor(message, status, data) {
+    constructor(message, status, data, isNetworkError = false) {
         super(message);
         this.name = 'ApiError';
         this.status = status;
         this.data = data;
+        this.isNetworkError = isNetworkError;
     }
 }
 

@@ -27,6 +27,7 @@ class AuthService {
             );
 
             if (response.success && response.data.token) {
+                this.clearRemember();
                 this.setAuthData(response.data, credentials.rememberMe);
             }
             
@@ -99,16 +100,11 @@ class AuthService {
         
         storage.setItem('rememberMe', rememberMe);
         storage.setItem('token', data.token);
-        storage.setItem('user', JSON.stringify(data.user));
     }
 
     clearAuthData() {
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
-        localStorage.removeItem('user');
-        sessionStorage.removeItem('user');
-        sessionStorage.removeItem('rememberMe');
-        localStorage.removeItem('rememberMe');
     }
 
     getToken() {
@@ -121,16 +117,9 @@ class AuthService {
             sessionStorage.getItem('rememberMe');
     }
 
-    getCurrUser() {
-        const user =
-            localStorage.getItem('user') ||
-            sessionStorage.getItem('user');
-
-        try {
-            return user ? JSON.parse(user) : null;
-        } catch {
-            return null;
-        }
+    clearRemember() {
+        return localStorage.removeItem('rememberMe') ||
+            sessionStorage.removeItem('rememberMe');
     }
 
     transformUserData(user) {
