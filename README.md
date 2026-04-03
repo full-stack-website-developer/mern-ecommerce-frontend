@@ -109,3 +109,12 @@ npm run dev
 ```
 
 ## Environment Variables
+VITE_API_URL=http://localhost:5000/api
+---
+
+## Author
+
+**Talha Sajjad** — MERN Stack Developer
+📧 talhasajjad148@gmail.com
+🔗 [Portfolio](https://talha-sajjad-portfolio.netlify.app)
+🔗 [LinkedIn](https://linkedin.com/in/talha-sajjad-dev)
